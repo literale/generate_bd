@@ -236,7 +236,7 @@ namespace Console_product_generation
             Console.WriteLine(key_id.ToString());
             if (key_id == 0)
             {
-                id = SQL_Commands.HowMuchRows("product_type_big", "ID_product_type_big");
+                id = SQL_Commands.HowMuchRows("product_type_big", "ID_product_type_big")+1;
                 string[] kn_w = { "ID_product_type_big", "product_type_big_name" };
                 string[] kv_w = { id.ToString(), big_type };
                 SQL_Commands.WriteInTable("product_type_big", kn_w, kv_w);
@@ -261,7 +261,7 @@ namespace Console_product_generation
             Console.WriteLine(key_id.ToString());
             if (key_id == 0)
             {
-                id = SQL_Commands.HowMuchRows("product_type_little", "ID_product_type_little");
+                id = SQL_Commands.HowMuchRows("product_type_little", "ID_product_type_little")+1;
                 string[] kn_w = { "ID_product_type_little", "ID_product_type_bigger", "name" };
                 string[] kv_w = { id.ToString(), key_id_b.ToString(), little_type };
                 SQL_Commands.WriteInTable("product_type_little", kn_w, kv_w);

@@ -1,0 +1,4 @@
+UNIT = gram
+cost_min = 20
+cost_max = 80
+vague = 10

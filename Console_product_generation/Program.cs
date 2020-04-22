@@ -94,8 +94,8 @@ namespace Console_product_generation
                             Console.WriteLine(u.ToString() + " " + cost_min + " " + cost_max + " " + vague);
                         }
                     }
-                    Generate_product_universal gpu_cat_food_dry = new Generate_product_universal(brand_txt, weight_txt, txts_for_mix.ToArray(), cost_min, cost_max, little_type.Name, big_type.Name, u, vague);
-                    gpu_cat_food_dry.GO(100);
+                    Generate_product_universal gpu = new Generate_product_universal(brand_txt, weight_txt, txts_for_mix.ToArray(), cost_min, cost_max, little_type.Name, big_type.Name, u, vague);
+                    gpu.GO(100);
 
                 }
                 //    list_dirs.Add(dir.Name);
