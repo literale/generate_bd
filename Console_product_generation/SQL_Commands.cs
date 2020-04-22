@@ -81,7 +81,7 @@ namespace Console_product_generation
         /// <param name="key_values"></param> Значения полей
         /// request SELECT * FROM brands WHERE idBrands = 01 AND Brand_name = "jjj";
         /// <returns></returns>
-        public static bool TableHaveKey(string table, string[] key_names, string[] key_values)
+        public static int TableHaveKey(string table, string[] key_names, string[] key_values)
         {
             bool have = false;
             string request = "SELECT * FROM " + table + " WHERE";
@@ -96,8 +96,8 @@ namespace Console_product_generation
             DataTable temp_dtable = new DataTable();
             temp_dtable.Load(data_reader);
             connection.Close();
-            if (temp_dtable.Rows.Count > 0) return true;
-            else return false;
+            return temp_dtable.Rows.Count;
+
         }
 
         /// <summary>

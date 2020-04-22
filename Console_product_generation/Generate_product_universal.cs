@@ -126,6 +126,8 @@ namespace Console_product_generation
             delete_part(max_rows);
             print_mix();
             write_brand();
+            write_big_type();
+            write_small_type();
         }
 
         /// <summary>
@@ -204,17 +206,16 @@ namespace Console_product_generation
             DataTable table = SQL_Commands.TryToConnect_Full("Brands");
 
             int id = 1;
-            bool brand_exist = false;
             string[] kn = { "Brand_name" };
 
             foreach (string brand in lines_brand)
             {
-                string[] kv = {brand};
-                brand_exist = SQL_Commands.TableHaveKey("Brands", kn, kv);
-                Console.WriteLine(brand_exist.ToString());
-                if (!brand_exist)
+                string[] kv = { brand };
+                int key_id = SQL_Commands.TableHaveKey("Brands", kn, kv);
+                Console.WriteLine(key_id.ToString());
+                if (key_id == 0)
                 {
-                    id = SQL_Commands.HowMuchRows("Brands", "idBrands");
+                    id = SQL_Commands.HowMuchRows("Brands", "idBrands") + 1;
                     string[] kn_w = { "idBrands", "Brand_name" };
                     string[] kv_w = { id.ToString(), brand };
                     SQL_Commands.WriteInTable("Brands", kn_w, kv_w);
@@ -225,13 +226,46 @@ namespace Console_product_generation
         /// Запись больших типов (товары для животных)
         /// </summary>
         private void write_big_type()
-        { }
+        {
+            DataTable table = SQL_Commands.TryToConnect_Full("product_type_big");
+
+            int id = 1;
+            string[] kn = { "product_type_big_name" };
+            string[] kv = { big_type };
+            int key_id = SQL_Commands.TableHaveKey("product_type_big", kn, kv);
+            Console.WriteLine(key_id.ToString());
+            if (key_id == 0)
+            {
+                id = SQL_Commands.HowMuchRows("product_type_big", "ID_product_type_bid");
+                string[] kn_w = { "ID_product_type_bid", "product_type_big_name" };
+                string[] kv_w = { id.ToString(), big_type };
+                SQL_Commands.WriteInTable("product_type_big", kn_w, kv_w);
+            }
+        }
+
         /// <summary>
         /// Запись малых типов (кошачья еда)
         /// </summary>
         private void write_small_type()
         {
-        
+            DataTable table = SQL_Commands.TryToConnect_Full("product_type_little");
+
+            int id = 1;
+            string[] kn_b = { "product_type_big_name" };
+            string[] kv_b = { big_type };
+            int key_id_b = SQL_Commands.TableHaveKey("product_type_big", kn_b, kv_b);
+
+            string[] kn = { "name" };
+            string[] kv = { little_type };
+            int key_id = SQL_Commands.TableHaveKey("product_type_little", kn, kv);
+            Console.WriteLine(key_id.ToString());
+            if (key_id == 0)
+            {
+                id = SQL_Commands.HowMuchRows("product_type_little", "ID_product_type_little");
+                string[] kn_w = { "ID_product_type_little", "ID_product_type_bigger", "name" };
+                string[] kv_w = { id.ToString(), key_id_b.ToString(), little_type };
+                SQL_Commands.WriteInTable("product_type_little", kn_w, kv_w);
+            }
         }
         /// <summary>
         /// запись продуктов
