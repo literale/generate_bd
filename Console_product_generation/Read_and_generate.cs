@@ -106,9 +106,6 @@ namespace Console_product_generation
         public static void Generate_shops()
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "gen" + "\\" + "shops";
-           // Console.WriteLine(path);
-            DirectoryInfo dir = new DirectoryInfo(path);
-            FileInfo[] files = dir.GetFiles();
             string address_txt = path + "\\" + "address.txt";
             string city_txt = path + "\\" + "city.txt";
             string[] address = File.ReadAllLines(address_txt);
@@ -132,5 +129,50 @@ namespace Console_product_generation
 
             }
         }
+
+        public static void Generate_people(bool auto_email, int count)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "gen" + "\\" + "people";
+            string first_male_txt = path + "\\" + "first_male.txt";
+            string first_female_txt = path + "\\" + "first_female.txt";
+            string second_txt = path + "\\" + "second.txt";
+            string third_txt = path + "\\" + "third.txt";
+            string[] first_male = File.ReadAllLines(first_male_txt);
+            string[] first_female = File.ReadAllLines(first_female_txt);
+            string[] second = File.ReadAllLines(second_txt);
+            string[] third = File.ReadAllLines(third_txt);
+            string f_name = "";
+            string s_name = "";
+            string t_name = "";
+            int id = SQL_Commands.HowMuchRows("customers", "ID_customer") + 1;
+            Random r = new Random();
+            for (int i = 0; i< count; i++)
+            {
+                if (r.Next(0,2)>0)
+                {
+                    f_name = first_female[r.Next(0, first_female.Length)];
+                    s_name = second[r.Next(0, second.Length)]+"a";
+                    t_name = third[r.Next(0, third.Length)]+"a";
+                }
+                else
+                {
+                    f_name = first_male[r.Next(0, first_female.Length)];
+                    s_name = second[r.Next(0, second.Length)];
+                    t_name = third[r.Next(0, third.Length)];
+                }
+                string email = "";
+
+                if (auto_email)
+                    email = f_name + s_name + t_name + id + "@yandex.ru";
+                else
+                    email = "diplom2020@yandex.ru";
+                string[] kn = { "ID_customer", "FIO_customer","email_customer" };
+                string[] kv = { id.ToString(), s_name + " " + f_name + " " + t_name, email };
+                SQL_Commands.WriteInTable("customers", kn, kv);
+                id++;
+            }
+        }
+        public static void Generate_check()
+        { }
     }
 }

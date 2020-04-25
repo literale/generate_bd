@@ -18,6 +18,9 @@ namespace Console_product_generation
             SQL_Commands.setConnection(Info.connection_string);
             Read_and_generate.Generate_shops();
             Read_and_generate.Generate_products();
+            Read_and_generate.Generate_people(true, 50);
+
+            Console.WriteLine("DONE");
             Console.ReadKey();
         }
         

@@ -344,19 +344,6 @@ namespace Console_product_generation
                         }
                     }
                 }
-
-                //string[] kn = { "product_name", "type_little_name", "brand_name" };
-                //string[] kv = { p.Split(' ')[0], little_type, p.Split('_')[0] };
-                //int key_id = SQL_Commands.TableHaveKey("product_on_store", kn, kv);
-
-                //if (key_id == 0)
-                //{
-
-                //    string[] kn_w = { "ID_product", "product_name", "type_little_name", "brand_name" };
-                //    string[] kv_w = { id.ToString(), p.Split(' ')[0], little_type, p.Split('_')[0] };
-                //    SQL_Commands.WriteInTable("product_on_store", kn_w, kv_w);
-                //    id++;
-                //}
             }
         }
 
