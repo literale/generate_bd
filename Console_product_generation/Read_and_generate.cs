@@ -27,6 +27,8 @@ namespace Console_product_generation
             int price_rejection = 0;
             int pers_have = 0;
             int amount = 0;
+            double pers = 0;
+            double one_cicle = 0;
             foreach (DirectoryInfo big_type in di.GetDirectories())
             {
                // Console.WriteLine(big_type.Name);
@@ -36,6 +38,11 @@ namespace Console_product_generation
                   //  Console.WriteLine(little_type.Name);
                     foreach (DirectoryInfo dir in little_type.GetDirectories())
                     {
+                        if (one_cicle == 0)
+                        {
+                            one_cicle = 100 / (little_type.GetDirectories().Length * big_type.GetDirectories().Length * di.GetDirectories().Length);
+                        }
+                        
                         if (dir.Name.Equals("brand"))
                         {
                             FileInfo[] files = dir.GetFiles();
@@ -96,6 +103,8 @@ namespace Console_product_generation
                             }
                            // Console.WriteLine(u.ToString() + " " + price_min + " " + price_max + " " + count);
                         }
+                        pers += one_cicle;
+                        Console.WriteLine(pers + "%");
                     }
                     Generate_product_universal gpu = new Generate_product_universal(brand_txt, weight_txt, txts_for_mix.ToArray(), price_min, price_max, little_type.Name, big_type.Name, u, count, price_rejection, pers_have, amount);
                     gpu.GO();
@@ -146,6 +155,7 @@ namespace Console_product_generation
             string t_name = "";
             int id = SQL_Commands.HowMuchRows("customers", "ID_customer") + 1;
             Random r = new Random();
+            int d_per_count = count / 10;
             for (int i = 0; i< count; i++)
             {
                 if (r.Next(0,2)>0)
@@ -170,6 +180,10 @@ namespace Console_product_generation
                 string[] kv = { id.ToString(), s_name + " " + f_name + " " + t_name, email };
                 SQL_Commands.WriteInTable("customers", kn, kv);
                 id++;
+                if((i + 1)%d_per_count == 0 && (i+1)>= d_per_count)
+                {
+                    Console.WriteLine((Convert.ToDouble(i+1)/Convert.ToDouble(count))*100+ "%");
+                }
             }
         }
         public static void Generate_check()

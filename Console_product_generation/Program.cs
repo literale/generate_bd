@@ -16,10 +16,15 @@ namespace Console_product_generation
         static void Main(string[] args)
         {
             SQL_Commands.setConnection(Info.connection_string);
+            Console.WriteLine("Начата генерация магазинов");
             Read_and_generate.Generate_shops();
+            Console.WriteLine("Закончена генерация магазинов");
+            Console.WriteLine("Начата генерация продуктов");
             Read_and_generate.Generate_products();
-            Read_and_generate.Generate_people(true, 50);
-
+            Console.WriteLine("Закончена генерация продуктов");
+            Console.WriteLine("Начата генерация людей");
+            Read_and_generate.Generate_people(true, 5000);
+            Console.WriteLine("Закончена генерация людей");
             Console.WriteLine("DONE");
             Console.ReadKey();
         }
