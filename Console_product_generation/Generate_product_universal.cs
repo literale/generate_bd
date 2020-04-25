@@ -23,10 +23,11 @@ namespace Console_product_generation
         private string[] lines_weight;
         private string little_type;
         private string big_type;
-        private int cost_min;
-        private int cost_max;
-        private int percent_cost_vague;
+        private int price_min;
+        private int price_max;
+        private int count;
         private UNIT unit;
+        private int price_rejection;
         private MySqlConnection connection;
 
         /// <summary>
@@ -40,16 +41,17 @@ namespace Console_product_generation
         /// <param name="little_type"></param> -меньший тип (кошачья еда влажная)
         /// <param name="big_type"></param> - больший тип (товары ждля животных) 
         /// <param name="unit"></param> - Единицы измерения
-        public Generate_product_universal(string txt_brand, string txt_weight, string[] txts_for_mix, int cost_min, int cost_max, string little_type, string big_type, UNIT unit, int percent_cost_vague)
+        public Generate_product_universal(string txt_brand, string txt_weight, string[] txts_for_mix, int price_min, int price_max, string little_type, string big_type, UNIT unit, int count, int price_rejection)
         {
             this.lines_brand = File.ReadAllLines(txt_brand);
             this.lines_weight = File.ReadAllLines(txt_weight);
             this.little_type = little_type;
             this.big_type = big_type;
-            this.cost_min = cost_min;
-            this.cost_max = cost_max;
+            this.price_min = price_min;
+            this.price_max = price_max;
             this.unit = unit;
-            this.percent_cost_vague = percent_cost_vague;
+            this.count = count;
+            this.price_rejection = price_rejection;
             foreach (string fn in txts_for_mix)
             {
                 this.mix_txts.Add(File.ReadAllLines(fn));
@@ -61,9 +63,11 @@ namespace Console_product_generation
         /// </summary>
         private void Mix()
         {
+            Random r = new Random();
             foreach (string brand in lines_brand)
             {
-                double cost = cost_generation();
+                double cost = cost_generation(r);
+                Console.WriteLine("Cost = " + cost);
                 foreach (string s_weight in lines_weight)
                 {
                     double weight = Convert.ToDouble(s_weight);
@@ -120,11 +124,11 @@ namespace Console_product_generation
         /// <summary>
         /// Отладка
         /// </summary>
-        public void GO(int max_rows)
+        public void GO()
         {
             Mix();
-            delete_part(max_rows);
-            print_mix();
+            delete_part(count);
+          //  print_mix();
             write_brand();
             write_big_type();
             write_small_type();
@@ -151,15 +155,14 @@ namespace Console_product_generation
         /// Генерирует цену для бренда на единицу измерения (1 грамм, 1 мллитр, 1 штука)
         /// </summary>
         /// <returns></returns>
-        private double cost_generation()
+        private double cost_generation(Random rnd)
         {
-            Random rnd = new Random();
-            double cost = rnd.Next(cost_min, cost_max + 1);
+            double price = rnd.Next(price_min, price_max + 1);
             if (unit == UNIT.GRAM || unit == UNIT.MILILITRE)
             {
-                cost = cost / 100;
+                price = price / 100;
             }
-            return cost;
+            return price;
         }
 
         /// <summary>
@@ -203,22 +206,22 @@ namespace Console_product_generation
         /// </summary>
         private void write_brand()
         {
-            DataTable table = SQL_Commands.TryToConnect_Full("Brands");
+            DataTable table = SQL_Commands.TryToConnect_Full("brands");
 
             int id = 1;
-            string[] kn = { "Brand_name" };
+            string[] kn = { "brand_name" };
 
             foreach (string brand in lines_brand)
             {
                 string[] kv = { brand };
-                int key_id = SQL_Commands.TableHaveKey("Brands", kn, kv);
-                Console.WriteLine(key_id.ToString());
+                int key_id = SQL_Commands.TableHaveKey("brands", kn, kv);
+                //if (key_id == 0) Console.WriteLine("нет"); else Console.WriteLine("есть");
                 if (key_id == 0)
                 {
-                    id = SQL_Commands.HowMuchRows("Brands", "idBrands") + 1;
-                    string[] kn_w = { "idBrands", "Brand_name" };
+                    id = SQL_Commands.HowMuchRows("brands", "ID_brand") + 1;
+                    string[] kn_w = { "ID_brand", "brand_name" };
                     string[] kv_w = { id.ToString(), brand };
-                    SQL_Commands.WriteInTable("Brands", kn_w, kv_w);
+                    SQL_Commands.WriteInTable("brands", kn_w, kv_w);
                 }
             }
         }
@@ -230,14 +233,14 @@ namespace Console_product_generation
             DataTable table = SQL_Commands.TryToConnect_Full("product_type_big");
 
             int id = 1;
-            string[] kn = { "product_type_big_name" };
+            string[] kn = { "name_product_type_big" };
             string[] kv = { big_type };
             int key_id = SQL_Commands.TableHaveKey("product_type_big", kn, kv);
-            Console.WriteLine(key_id.ToString());
+            //if (key_id == 0) Console.WriteLine("нет"); else Console.WriteLine("есть");
             if (key_id == 0)
             {
                 id = SQL_Commands.HowMuchRows("product_type_big", "ID_product_type_big")+1;
-                string[] kn_w = { "ID_product_type_big", "product_type_big_name" };
+                string[] kn_w = { "ID_product_type_big", "name_product_type_big" };
                 string[] kv_w = { id.ToString(), big_type };
                 SQL_Commands.WriteInTable("product_type_big", kn_w, kv_w);
             }
@@ -251,18 +254,18 @@ namespace Console_product_generation
             DataTable table = SQL_Commands.TryToConnect_Full("product_type_little");
 
             int id = 1;
-            string[] kn_b = { "product_type_big_name" };
+            string[] kn_b = { "name_product_type_big" };
             string[] kv_b = { big_type };
             int key_id_b = SQL_Commands.TableHaveKey("product_type_big", kn_b, kv_b);
 
-            string[] kn = { "name" };
+            string[] kn = { "name_product_type_little" };
             string[] kv = { little_type };
             int key_id = SQL_Commands.TableHaveKey("product_type_little", kn, kv);
-            Console.WriteLine(key_id.ToString());
+            //if (key_id == 0) Console.WriteLine("нет"); else Console.WriteLine("есть");
             if (key_id == 0)
             {
                 id = SQL_Commands.HowMuchRows("product_type_little", "ID_product_type_little")+1;
-                string[] kn_w = { "ID_product_type_little", "ID_product_type_bigger", "name" };
+                string[] kn_w = { "ID_product_type_little", "ID_product_type_bigger", "name_product_type_little" };
                 string[] kv_w = { id.ToString(), key_id_b.ToString(), little_type };
                 SQL_Commands.WriteInTable("product_type_little", kn_w, kv_w);
             }
@@ -272,7 +275,23 @@ namespace Console_product_generation
         /// </summary>
         private void write_product()
         {
+            DataTable table = SQL_Commands.TryToConnect_Full("products");
+            int id = 1;
+            string[] kn_b = { "product_type_big_name" };
+            string[] kv_b = { big_type };
+            int key_id_b = SQL_Commands.TableHaveKey("product_type_big", kn_b, kv_b);
 
+            string[] kn = { "name" };
+            string[] kv = { little_type };
+            int key_id = SQL_Commands.TableHaveKey("product_type_little", kn, kv);
+            //if (key_id == 0) Console.WriteLine("нет"); else Console.WriteLine("есть");
+            if (key_id == 0)
+            {
+                id = SQL_Commands.HowMuchRows("product_type_little", "ID_product_type_little") + 1;
+                string[] kn_w = { "ID_product_type_little", "ID_product_type_bigger", "name" };
+                string[] kv_w = { id.ToString(), key_id_b.ToString(), little_type };
+                SQL_Commands.WriteInTable("product_type_little", kn_w, kv_w);
+            }
         }
         /// <summary>
         /// Заполнениес кладов

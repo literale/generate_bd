@@ -83,11 +83,12 @@ namespace Console_product_generation
         /// <returns></returns>
         public static int TableHaveKey(string table, string[] key_names, string[] key_values)
         {
-            bool have = false;
+
             string request = "SELECT * FROM " + table + " WHERE";
             for (int i = 0; i < key_names.Length; i++)
             {
                 request += " " + key_names[i] + " = '" + key_values[i] + "'";
+                if (i + 1 < key_names.Length) request += " AND ";
             }
             request += ";";
             connection.Open();

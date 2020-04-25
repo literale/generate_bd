@@ -1,0 +1,5 @@
+UNIT = gram
+price_min = 20
+price_max = 80
+count = 50
+price_rejection = 10

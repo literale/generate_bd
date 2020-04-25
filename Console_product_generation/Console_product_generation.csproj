@@ -87,6 +87,7 @@
     <Compile Include="Info.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Read_and_generate.cs" />
     <Compile Include="SQL_Commands.cs" />
   </ItemGroup>
   <ItemGroup>
