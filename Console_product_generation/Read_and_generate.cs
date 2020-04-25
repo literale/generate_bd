@@ -14,7 +14,7 @@ namespace Console_product_generation
         {
             
             string path = AppDomain.CurrentDomain.BaseDirectory + "gen" + "\\" + "products";
-            Console.WriteLine(path);
+            //Console.WriteLine(path);
             DirectoryInfo di = new DirectoryInfo(path);
             List<String> txts_for_mix = new List<String>();
             string brand_txt = "";
@@ -25,20 +25,22 @@ namespace Console_product_generation
             int price_max = 0;
             int count = 0;
             int price_rejection = 0;
+            int pers_have = 0;
+            int amount = 0;
             foreach (DirectoryInfo big_type in di.GetDirectories())
             {
-                Console.WriteLine(big_type.Name);
+               // Console.WriteLine(big_type.Name);
                 foreach (DirectoryInfo little_type in big_type.GetDirectories())
                 {
                     txts_for_mix = new List<String>();
-                    Console.WriteLine(little_type.Name);
+                  //  Console.WriteLine(little_type.Name);
                     foreach (DirectoryInfo dir in little_type.GetDirectories())
                     {
                         if (dir.Name.Equals("brand"))
                         {
                             FileInfo[] files = dir.GetFiles();
                             brand_txt = path + "\\" + big_type + "\\" + little_type + "\\" + dir.Name + "\\" + files[0].Name;
-                            Console.WriteLine(brand_txt);
+                            //Console.WriteLine(brand_txt);
                         }
                         if (dir.Name.Equals("mix"))
                         {
@@ -46,20 +48,20 @@ namespace Console_product_generation
                             foreach (FileInfo f in files)
                             {
                                 txts_for_mix.Add(path + "\\" + big_type + "\\" + little_type + "\\" + dir.Name + "\\" + f.Name);
-                                Console.WriteLine(txts_for_mix.Last());
+                                //Console.WriteLine(txts_for_mix.Last());
                             }
                         }
                         if (dir.Name.Equals("weight"))
                         {
                             FileInfo[] files = dir.GetFiles();
                             weight_txt = path + "\\" + big_type + "\\" + little_type + "\\" + dir.Name + "\\" + files[0].Name;
-                            Console.WriteLine(weight_txt);
+                           // Console.WriteLine(weight_txt);
                         }
                         if (dir.Name.Equals("info"))
                         {
                             FileInfo[] files = dir.GetFiles();
                             string info_txt = path + "\\" + big_type + "\\" + little_type + "\\" + dir.Name + "\\" + files[0].Name;
-                            Console.WriteLine(info_txt);
+                           // Console.WriteLine(info_txt);
                             info = File.ReadAllLines(info_txt);
                             foreach (string i in info)
                             {
@@ -85,13 +87,17 @@ namespace Console_product_generation
                                 { count = Convert.ToInt32(line[2]); }
                                 else if (line[0].Equals("price_rejection"))
                                 { price_rejection = Convert.ToInt32(line[2]); }
+                                else if (line[0].Equals("pers_have"))
+                                { pers_have = Convert.ToInt32(line[2]); }
+                                else if (line[0].Equals("amount"))
+                                { amount = Convert.ToInt32(line[2]); }
 
 
                             }
-                            Console.WriteLine(u.ToString() + " " + price_min + " " + price_max + " " + count);
+                           // Console.WriteLine(u.ToString() + " " + price_min + " " + price_max + " " + count);
                         }
                     }
-                    Generate_product_universal gpu = new Generate_product_universal(brand_txt, weight_txt, txts_for_mix.ToArray(), price_min, price_max, little_type.Name, big_type.Name, u, count, price_rejection);
+                    Generate_product_universal gpu = new Generate_product_universal(brand_txt, weight_txt, txts_for_mix.ToArray(), price_min, price_max, little_type.Name, big_type.Name, u, count, price_rejection, pers_have, amount);
                     gpu.GO();
 
                 }
@@ -100,7 +106,7 @@ namespace Console_product_generation
         public static void Generate_shops()
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "gen" + "\\" + "shops";
-            Console.WriteLine(path);
+           // Console.WriteLine(path);
             DirectoryInfo dir = new DirectoryInfo(path);
             FileInfo[] files = dir.GetFiles();
             string address_txt = path + "\\" + "address.txt";
@@ -125,10 +131,6 @@ namespace Console_product_generation
                 }
 
             }
-            //List <List<string>> files = new 
-            //string info_txt = path + "\\" + files[0].Name;
-            // Console.WriteLine(info_txt);
-            //info = File.ReadAllLines(info_txt);
         }
     }
 }

@@ -3,3 +3,5 @@ price_min = 20
 price_max = 80
 count = 50
 price_rejection = 10
+pers_have = 66
+amount = 250

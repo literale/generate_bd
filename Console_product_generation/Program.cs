@@ -16,8 +16,8 @@ namespace Console_product_generation
         static void Main(string[] args)
         {
             SQL_Commands.setConnection(Info.connection_string);
-            Read_and_generate.Generate_products();
             Read_and_generate.Generate_shops();
+            Read_and_generate.Generate_products();
             Console.ReadKey();
         }
         

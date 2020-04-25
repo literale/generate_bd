@@ -66,7 +66,7 @@ namespace Console_product_generation
                 else request += ") ";
             }
             request += ";";
-            Console.WriteLine(request);
+           // Console.WriteLine(request);
             MySqlCommand new_command = new MySqlCommand(request, connection);
             MySqlDataReader data_reader = new_command.ExecuteReader();
             connection.Close();
