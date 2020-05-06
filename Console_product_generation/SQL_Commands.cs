@@ -129,5 +129,56 @@ namespace Console_product_generation
             connection.Close();
             return id;
         }
+
+        public static string IDOfName(string table, string[] key_names, string[] key_values, string id_name)
+        {
+            string id = "";
+
+            string request = "SELECT * FROM " + table + " WHERE";
+            for (int i = 0; i < key_names.Length; i++)
+            {
+                request += " " + key_names[i] + " = '" + key_values[i] + "'";
+                if (i + 1 < key_names.Length) request += " AND ";
+            }
+            request += ";";
+            connection.Open();
+            MySqlCommand new_command = new MySqlCommand(request, connection);
+            MySqlDataReader data_reader = new_command.ExecuteReader();
+            DataTable temp_dtable = new DataTable();
+            temp_dtable.Load(data_reader);
+            DataRow s = temp_dtable.Rows[0];
+            object[] fields = s.ItemArray;
+            id = fields[0].ToString();     
+            connection.Close();
+            return id;
+        }
+
+        public static DataTable TryToGetStrings(string table, string[] key_names, string[] key_values)
+        {
+            connection.Open();
+            string request = "SELECT * FROM " + table + " WHERE";
+            for (int i = 0; i < key_names.Length; i++)
+            {
+                request += " " + key_names[i] + " = '" + key_values[i] + "'";
+                if (i + 1 < key_names.Length) request += " AND ";
+            }
+            request += ";";
+
+            MySqlCommand new_command = new MySqlCommand(request, connection);
+            MySqlDataReader data_reader = new_command.ExecuteReader();
+            DataTable temp_dtable = new DataTable();
+            temp_dtable.Load(data_reader);
+            //foreach (DataRow s in temp_dtable.Rows)
+            //{
+            //    object[] fields = s.ItemArray;
+            //    foreach (object o in fields)
+            //    {
+            //        Console.Write(o.ToString() + " ");
+            //    }
+            //    Console.WriteLine();
+            //}
+            connection.Close();
+            return temp_dtable;
+        }
     }
 }

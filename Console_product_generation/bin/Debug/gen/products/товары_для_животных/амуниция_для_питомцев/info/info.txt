@@ -1,0 +1,7 @@
+UNIT = PIECE
+price_min = 250
+price_max = 2000
+count = 50
+price_rejection = 10
+pers_have = 50
+amount = 10

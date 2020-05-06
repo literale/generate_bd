@@ -32,17 +32,19 @@ namespace Console_product_generation
         private int amount;
         //private MySqlConnection connection;
 
-        /// <summary>
-        /// Конструктор
         /// </summary>
         /// <param name="txt_brand"></param> имя файла со списком брэндов
         /// <param name="txt_weight"></param> имя файла, с возможным весом/объемом продукта
         /// <param name="txts_for_mix"></param> список имен файлов с прочими параментрами для генерации
-        /// <param name="cost_min"></param> - минимальная цена за 100г/100мл/1шт
-        /// <param name="cost_max"></param> - максимальная цена за 100г/100мл/1шт 
-        /// <param name="little_type"></param> -меньший тип (кошачья еда влажная)
-        /// <param name="big_type"></param> - больший тип (товары ждля животных) 
-        /// <param name="unit"></param> - Единицы измерения
+        /// <param name="price_min"></param> минимальная цена за 100г/100мл/1шт
+        /// <param name="price_max"></param> максимальная цена за 100г/100мл/1шт 
+        /// <param name="little_type"></param> меньший тип (кошачья еда влажная)
+        /// <param name="big_type"></param> больший тип (товары ждля животных) 
+        /// <param name="unit"></param>  Единицы измерения
+        /// <param name="count"></param> кол-во генерируемых видов
+        /// <param name="price_rejection"></param> разброс цены
+        /// <param name="pers_have"></param> шанс, что в магазине Н будет конкретный продукт из генерироуемых
+        /// <param name="amount"></param> максимальное кол-во на складе одного магазина
         public Generate_product_universal(string txt_brand, string txt_weight, string[] txts_for_mix, int price_min, int price_max, string little_type, string big_type, UNIT unit, int count, int price_rejection, int pers_have, int amount)
         {
             this.lines_brand = File.ReadAllLines(txt_brand);
@@ -79,9 +81,20 @@ namespace Console_product_generation
                     full_cost = weight * cost;
                     string s_norm_weight = unit_normolizer(weight);
                     List<string> mix_types = new List<string>();
-                    for (int i = 0; i < mix_txts.Count - 1; i++)
+                    if (mix_txts.Count < 2)
                     {
-                        mix_types = GoMix(mix_txts[i], mix_txts[i + 1]);
+                        List<string> mix = new List<string>();
+                        foreach (string l1 in mix_txts[0])
+                        {
+                            mix_types.Add(l1);
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < mix_txts.Count - 1; i++)
+                        {
+                            mix_types = GoMix(mix_txts[i], mix_txts[i + 1]);
+                        }
                     }
                     foreach (string mt in mix_types)
                     {
@@ -216,18 +229,20 @@ namespace Console_product_generation
           //  DataTable table = SQL_Commands.TryToConnect_Full("brands");
 
             int id = 1;
-            string[] kn = { "brand_name" };
+            string[] kn = { "brand_name", "brand_counrty" };
 
             foreach (string brand in lines_brand)
             {
-                string[] kv = { brand };
+                string brand_name = brand.Substring(0, brand.LastIndexOf('~'));
+                string country = brand.Substring(brand.LastIndexOf('~')+1);
+                string[] kv = { brand_name, country };
                 int key_id = SQL_Commands.TableHaveKey("brands", kn, kv);
                 id = SQL_Commands.HowMuchRows("brands", "ID_brand") + 1;
                 //if (key_id == 0) Console.WriteLine("нет"); else Console.WriteLine("есть");
                 if (key_id == 0)
                 {
-                    string[] kn_w = { "ID_brand", "brand_name" };
-                    string[] kv_w = { id.ToString(), brand };
+                    string[] kn_w = { "ID_brand", "brand_name", "brand_counrty" };
+                    string[] kv_w = { id.ToString(), brand_name, country };
                     SQL_Commands.WriteInTable("brands", kn_w, kv_w);
                     id++;
                 }
@@ -290,15 +305,25 @@ namespace Console_product_generation
             //int i = 0;
             for (int i = 0; i<mix.Count; i++ )
             {
-                string[] kn = { "product_name", "type_little_name", "brand_name" };
-                string[] kv = { mix[i].Split(' ')[0], little_type, mix[i].Split('_')[0] };
+                string brand = mix[i].Split('_')[0];
+                string country = brand.Substring(brand.LastIndexOf('~')+1);
+                string brand_name = brand.Substring(0, brand.LastIndexOf('~'));
+                brand = mix[i].Split(' ')[0].Replace("~", "_");
+
+                string[] knb = { "brand_name", "brand_counrty" };
+                string[] kvb = { brand_name, country };
+
+                string brand_id = SQL_Commands.IDOfName("brands", knb, kvb, "ID_brand");
+                string[] kn = { "product_name", "type_little_name", "brand_ID" };
+                string[] kv = { brand, little_type, brand_id.ToString() };
                 int key_id = SQL_Commands.TableHaveKey("products", kn, kv);
 
                 if (key_id == 0)
                 {
+                    
                     string cost = mix[i].Split(' ')[1].Replace(',', '.');
-                    string[] kn_w = { "ID_product", "product_name", "type_little_name", "brand_name", "product_cost" };
-                    string[] kv_w = { id.ToString(), mix[i].Split(' ')[0], little_type, mix[i].Split('_')[0], mix[i].Split(' ')[1].Replace(',', '.') };
+                    string[] kn_w = { "ID_product", "product_name", "type_little_name", "brand_ID", "product_cost" };
+                    string[] kv_w = { id.ToString(), brand, little_type, brand_id.ToString(), mix[i].Split(' ')[1].Replace(',', '.') };
                     SQL_Commands.WriteInTable("products", kn_w, kv_w);
                     mix[i] += " " + id;
                     id++;

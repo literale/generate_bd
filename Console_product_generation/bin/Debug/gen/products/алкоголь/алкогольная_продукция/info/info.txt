@@ -1,0 +1,7 @@
+UNIT = MILILITRE
+price_min = 70
+price_max = 300
+count = 25
+price_rejection = 35
+pers_have = 45
+amount = 7
